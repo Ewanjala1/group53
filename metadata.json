@@ -1,0 +1,6 @@
+{
+  "name": "Northstar Support Deflection MVP",
+  "description": "A 1-week industry working simulation MVP for Northstar Retail Co. featuring a Python deflection engine, customer self-serve portal, ticket triage automation, sprint audit trail, and go-live readiness deliverables.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
