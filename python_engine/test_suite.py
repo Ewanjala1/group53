@@ -76,6 +76,24 @@ class TestNorthstarDeflectionEngine(unittest.TestCase):
         self.assertTrue(sub["success"])
         self.assertIn("VIP list", sub["message"])
 
+    def test_size_matrix_lookup(self):
+        matrix = self.inventory_service.get_size_matrix("Apex Waterproof Shell", "Obsidian Navy")
+        self.assertGreater(len(matrix), 3)
+        sizes = [m["size"] for m in matrix]
+        self.assertIn("M", sizes)
+        self.assertIn("L", sizes)
+        # Size M should be in stock, L out of stock
+        size_m = next(m for m in matrix if m["size"] == "M")
+        size_l = next(m for m in matrix if m["size"] == "L")
+        self.assertTrue(size_m["in_stock"])
+        self.assertFalse(size_l["in_stock"])
+
+    def test_size_recommendation_engine(self):
+        rec = self.inventory_service.recommend_size("Outerwear", height_inches=72, weight_lbs=185, fit_pref="true_to_size")
+        self.assertIn("recommended_size", rec)
+        self.assertIn(rec["recommended_size"], ["M", "L"])
+        self.assertIn("chart", rec)
+
     # Classification & End-to-End Deflection Tests
     def test_ticket_classification_high_confidence(self):
         c1 = self.classifier.classify("Track my package NST-1048")

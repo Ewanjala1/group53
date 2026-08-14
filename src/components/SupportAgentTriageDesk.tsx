@@ -320,7 +320,7 @@ export const SupportAgentTriageDesk: React.FC<Props> = ({ recentTickets }) => {
                     <span>
                       Customer: <strong>{t.customer_name}</strong> ({t.customer_email})
                     </span>
-                    <span>Confidence: {(t.confidence * 100).toFixed(0)}%</span>
+                    <span>Confidence: {(Number(t.confidence ?? 0.9) * 100).toFixed(0)}%</span>
                   </div>
                 </div>
               );
@@ -362,7 +362,7 @@ export const SupportAgentTriageDesk: React.FC<Props> = ({ recentTickets }) => {
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">Sentiment & Confidence</span>
                     <strong className="text-slate-900 capitalize">
-                      {selectedTicket.sentiment} ({(selectedTicket.confidence * 100).toFixed(0)}%)
+                      {selectedTicket.sentiment} ({(Number(selectedTicket.confidence ?? 0.9) * 100).toFixed(0)}%)
                     </strong>
                   </div>
                 </div>

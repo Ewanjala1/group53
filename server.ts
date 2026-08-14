@@ -72,6 +72,142 @@ print(json.dumps(result))
     }
   });
 
+  // API Route: Inventory Full Catalog & Sizing Matrix
+  app.get("/api/inventory/catalog", async (req, res) => {
+    try {
+      const pythonScript = `
+import json
+from python_engine.models import SAMPLE_INVENTORY
+from python_engine.inventory_lookup import SIZING_CHARTS
+
+items = []
+for k, v in SAMPLE_INVENTORY.items():
+    items.append({
+        "sku": v.sku,
+        "name": v.name,
+        "category": v.category,
+        "size": v.size,
+        "color": v.color,
+        "stock_count": v.stock_count,
+        "warehouse_location": v.warehouse_location,
+        "restock_expected_date": v.restock_expected_date,
+        "alternatives_skus": v.alternatives_skus
+    })
+
+# Group into products
+PRICE_MAP = {
+    "Apex Waterproof Shell": 189.00,
+    "Altitude Thermal Parka": 299.00,
+    "TrailRunner Pro Shoes": 159.00,
+    "CloudLoft Tech Fleece": 129.00,
+    "Merino Wool Thermal Base Layer": 89.00,
+    "Expedition 45L Duffel Bag": 165.00
+}
+
+products = {}
+for i in items:
+    name = i["name"]
+    if name not in products:
+        products[name] = {
+            "name": name,
+            "category": i["category"],
+            "sku": i["sku"],
+            "price": PRICE_MAP.get(name, 149.00),
+            "color": i["color"],
+            "variants": [],
+            "sizes": set(),
+            "colors": set(),
+            "total_stock": 0,
+            "chart": SIZING_CHARTS.get(i["category"], {})
+        }
+    products[name]["variants"].append(i)
+    products[name]["sizes"].add(i["size"])
+    products[name]["colors"].add(i["color"])
+    products[name]["total_stock"] += i["stock_count"]
+
+catalog = []
+for name, p in products.items():
+    catalog.append({
+        "name": name,
+        "category": p["category"],
+        "sku": p["sku"],
+        "price": p["price"],
+        "color": p["color"],
+        "sizes": sorted(list(p["sizes"])),
+        "available_sizes": sorted(list(p["sizes"])),
+        "colors": sorted(list(p["colors"])),
+        "total_stock": p["total_stock"],
+        "variants": p["variants"],
+        "chart": p["chart"]
+    })
+
+print(json.dumps({"catalog": catalog, "charts": SIZING_CHARTS, "raw_items": items}))
+`;
+      const { stdout } = await execAsync(`python3 -c "${pythonScript.replace(/"/g, '\\"')}"`, {
+        cwd: process.cwd(),
+      });
+      res.json(JSON.parse(stdout.trim()));
+    } catch (err: any) {
+      console.error("Inventory catalog error:", err);
+      res.status(500).json({ error: "Failed to fetch inventory catalog", details: err.message });
+    }
+  });
+
+  // API Route: Size Recommendation Engine
+  app.post("/api/inventory/recommend-size", async (req, res) => {
+    try {
+      const { category, heightInches, weightLbs, fitPref } = req.body;
+      const pythonScript = `
+import json
+from python_engine.inventory_lookup import InventoryLookupService
+service = InventoryLookupService()
+result = service.recommend_size(
+    category="${(category || 'Outerwear').replace(/"/g, '')}",
+    height_inches=${Number(heightInches) || 70},
+    weight_lbs=${Number(weightLbs) || 170},
+    fit_pref="${(fitPref || 'true_to_size').replace(/"/g, '')}"
+)
+print(json.dumps(result))
+`;
+      const { stdout } = await execAsync(`python3 -c "${pythonScript.replace(/"/g, '\\"')}"`, {
+        cwd: process.cwd(),
+      });
+      res.json(JSON.parse(stdout.trim()));
+    } catch (err: any) {
+      console.error("Size recommendation error:", err);
+      res.status(500).json({ error: "Size recommendation calculation failed", details: err.message });
+    }
+  });
+
+  // API Route: Subscribe to Restock Alerts
+  app.post("/api/inventory/subscribe-restock", async (req, res) => {
+    try {
+      const { email, sku, phone, size } = req.body;
+      if (!email || !sku) {
+        return res.status(400).json({ error: "Email and SKU are required" });
+      }
+      const pythonScript = `
+import json
+from python_engine.inventory_lookup import InventoryLookupService
+service = InventoryLookupService()
+result = service.subscribe_restock_alert(
+    email="${email.replace(/"/g, '')}",
+    sku="${sku.replace(/"/g, '')}",
+    phone="${(phone || '').replace(/"/g, '')}",
+    size="${(size || '').replace(/"/g, '')}"
+)
+print(json.dumps(result))
+`;
+      const { stdout } = await execAsync(`python3 -c "${pythonScript.replace(/"/g, '\\"')}"`, {
+        cwd: process.cwd(),
+      });
+      res.json(JSON.parse(stdout.trim()));
+    } catch (err: any) {
+      console.error("Restock subscription error:", err);
+      res.status(500).json({ error: "Restock alert subscription failed", details: err.message });
+    }
+  });
+
   // API Route: Run 100-ticket Python Batch Simulation
   app.get("/api/python/simulate", async (req, res) => {
     try {
