@@ -209,7 +209,12 @@ export const Assignment1CharterAndBoard: React.FC = () => {
               {POD_MEMBERS.map((m) => (
                 <div key={m.id} className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-2">
                   <div className="flex items-center gap-3">
-                    <img src={m.avatar} alt={m.name} className="w-10 h-10 rounded-full object-cover border border-slate-300" />
+                    <div className="w-10 h-10 rounded-xl bg-slate-900 text-emerald-400 font-bold flex items-center justify-center text-xs border border-slate-700 shadow-sm flex-shrink-0">
+                      {m.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </div>
                     <div>
                       <h4 className="font-bold text-slate-900 text-sm">{m.name}</h4>
                       <div className="text-emerald-700 font-medium text-[11px]">{m.role}</div>
@@ -264,7 +269,7 @@ export const Assignment1CharterAndBoard: React.FC = () => {
               <div className="space-y-2 text-amber-950">
                 <div className="bg-white/80 p-2.5 rounded-lg border border-amber-200">
                   <strong>Trigger: 24 Hours Silent / Blocked</strong>
-                  <div className="text-[11px] text-amber-800 mt-0.5">Direct peer check-in by Product Lead (Alex Rivera) to re-estimate task slice.</div>
+                  <div className="text-[11px] text-amber-800 mt-0.5">Direct peer check-in by Product Lead (Emmanuel Wanjala) to re-estimate task slice.</div>
                 </div>
                 <div className="bg-white/80 p-2.5 rounded-lg border border-amber-200">
                   <strong>Trigger: 48 Hours (2+ Days) Zero Visible Activity</strong>

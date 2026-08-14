@@ -95,11 +95,12 @@ export const Assignment3PeerReliabilityIndex: React.FC = () => {
             {/* Left Member Card */}
             <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-xs space-y-4">
               <div className="flex items-center gap-3">
-                <img
-                  src={selectedMember.avatar}
-                  alt={selectedMember.name}
-                  className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500"
-                />
+                <div className="w-12 h-12 rounded-xl bg-slate-900 text-emerald-400 font-bold flex items-center justify-center text-sm border-2 border-emerald-500 shadow-sm flex-shrink-0">
+                  {selectedMember.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </div>
                 <div>
                   <h3 className="text-base font-bold text-slate-900">{selectedMember.name}</h3>
                   <div className="text-emerald-700 font-semibold text-xs">{selectedMember.role}</div>

@@ -22,7 +22,7 @@ export const Assignment2GoLiveNoteAndAuditLog: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   const goLiveMarkdown = `# Northstar Retail Co. - Support Deflection MVP: 1-Page Go-Live Readiness Note
-**Prepared by**: Pod Sprint Team (Alex Rivera, Devon Chen, Maya Patel, Liam O'Connor, Zoe Washington)
+**Prepared by**: Pod Sprint Team (Emmanuel Wanjala, Eunice Nyambura, Juliet Wairimu, Annie Kamau, Happy Chauke)
 **Date**: August 13, 2026 | **Target Engagement**: 1-Week Support Deflection Simulation
 **Status**: Ready for Production Staging & Internal Pilot
 
